@@ -17,7 +17,11 @@ shinyUI(fluidPage(
       hr(),
       
       selectInput('plot.type', label = 'Plot type', choices = c('Violin', 'Boxplot')),
-      checkboxInput('coloured', label = 'Coloured', value = T)
+      checkboxInput('coloured', label = 'Coloured', value = T),
+      
+      hr(),
+      
+      downloadButton('download')
     ),
 
     mainPanel(

@@ -5,8 +5,7 @@ library(dplyr)
 
 shinyServer(function(input, output) {
 
-  output$distPlot <- renderPlot({
-    
+  generatePlot <- function() {
     path <- file.path('resources', input$method, paste0(input$tumor, '.RData'))
     
     df <- local(get(load(path)))
@@ -38,5 +37,19 @@ shinyServer(function(input, output) {
       scale_fill_brewer(palette = 'Set1') +
       xlab('Tissue type') + 
       ylab('Contribution')
-  })
+  }
+  
+  output$distPlot <- renderPlot({ generatePlot() })
+  
+  output$download = downloadHandler(
+    filename = function() { 
+      sprintf('%s-%s.pdf', input$tumor, input$method)
+    },
+    content = function(file) {
+      device <- function(..., width, height) {
+        grDevices::pdf(..., width, height)
+      }
+      
+      ggsave(file, plot = generatePlot(), device = device)
+    })
 })
