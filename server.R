@@ -1,27 +1,42 @@
 library(shiny)
 library(reshape2)
 library(ggplot2)
+library(dplyr)
 
 shinyServer(function(input, output) {
 
   output$distPlot <- renderPlot({
     
-    path <- file.path('resources', input$method, paste0(input$tumor, '.rnaseq.RData'))
+    path <- file.path('resources', input$method, paste0(input$tumor, '.RData'))
     
     df <- local(get(load(path)))
     
-    df <- t(df)
+    if (input$top != 'All') {
+      n <- as.numeric(input$top)
+      top.tissues <- as.character(levels(df$tissue.ordered)[1:n])
+      df <- df %>% filter(tissue.ordered %in% top.tissues)
+    }
     
-    df <- melt(df, varnames = c('barcode', 'tissue'))
+    if (input$plot.type == 'Violin') {
+      geom_type <- geom_violin
+    } else {
+      geom_type <- geom_boxplot
+    }
     
-    tissue.order <- tapply(df$value, df$tissue, function(x) -median(x))
-    unique.names <- unique(names(tissue.order[order(tissue.order)]))
-    
-    df$tissue.ordered <- factor(df$tissue, levels = unique.names, ordered = T)
+    if (input$coloured == T) {
+      geom <- geom_type(aes(x = tissue.ordered, y = value, fill = tissue.ordered))
+      x.label <- theme(axis.text.x = element_blank())
+    } else {
+      geom <- geom_type(aes(x = tissue.ordered, y = value))
+      x.label <- theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    }
     
     ggplot(df) + 
-      geom_boxplot(aes(x = tissue.ordered, y = value)) + 
+      geom +
       theme_bw() +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      x.label + 
+      scale_fill_brewer(palette = 'Set1') +
+      xlab('Tissue type') + 
+      ylab('Contribution')
   })
 })
