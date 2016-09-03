@@ -34,9 +34,10 @@ shinyServer(function(input, output) {
       geom +
       theme_bw() +
       x.label + 
-      scale_fill_brewer(palette = 'Set1') +
+      scale_fill_brewer(palette = 'Spectral') +
       xlab('Tissue type') + 
-      ylab('Contribution')
+      ylab('Contribution') +
+      scale_fill_discrete(name = 'Tissue type')
   }
   
   output$distPlot <- renderPlot({ generatePlot() })
