@@ -25,7 +25,8 @@ shinyUI(fluidPage(
     ),
 
     mainPanel(
-      plotOutput('distPlot', height = '600px')
+      plotOutput('distPlot', height = '600px'),
+      plotOutput('heatmap', height = '600px')
     )
   )
 ))

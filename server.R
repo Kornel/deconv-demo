@@ -2,9 +2,22 @@ library(shiny)
 library(reshape2)
 library(ggplot2)
 library(dplyr)
+library(pheatmap)
 
 shinyServer(function(input, output) {
 
+  generateHeatmap <- function() {
+    path <- file.path('resources', input$method, 'heatmap', paste0(input$tumor, '.RData'))
+    df <- local(get(load(path)))
+    
+    if (input$top != 'All') {
+      n <- as.numeric(input$top)
+      df <- df[, seq(1:n)]
+    }
+  
+    pheatmap(df, fontsize = 5)
+  }
+  
   generatePlot <- function() {
     path <- file.path('resources', input$method, paste0(input$tumor, '.RData'))
     
@@ -34,13 +47,14 @@ shinyServer(function(input, output) {
       geom +
       theme_bw() +
       x.label + 
-      scale_fill_brewer(palette = 'Spectral') +
+      scale_fill_brewer(palette = 'Spectral', name = 'Tissue type') +
       xlab('Tissue type') + 
-      ylab('Contribution') +
-      scale_fill_discrete(name = 'Tissue type')
+      ylab('Contribution')
   }
   
   output$distPlot <- renderPlot({ generatePlot() })
+  
+  output$heatmap <- renderPlot({ generateHeatmap() })
   
   output$download = downloadHandler(
     filename = function() { 
