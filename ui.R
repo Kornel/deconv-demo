@@ -1,8 +1,11 @@
 library(shiny)
+library(knitr)
 
 tumor.names <- read.table('resources/tumor-names.csv', header = T, stringsAsFactors = F)
 
 methods <- read.table('resources/methods.csv', header = T, stringsAsFactors = F)
+
+knit('description.Rmd')
 
 shinyUI(fluidPage(
 
@@ -21,12 +24,17 @@ shinyUI(fluidPage(
       
       hr(),
       
-      downloadButton('download')
+      downloadButton('download', label = 'Download plot')
     ),
 
     mainPanel(
-      plotOutput('distPlot', height = '600px'),
-      plotOutput('heatmap', height = '600px')
+      tabsetPanel(
+        tabPanel('Plot', plotOutput('distPlot', height = '600px')),
+        tabPanel('Heatmap', plotOutput('heatmap', height = '600px')),
+        tabPanel('Description', fluidPage(withMathJax(includeMarkdown("description.md")))),
+        id = 'tabs'
+      )
+      
     )
   )
 ))

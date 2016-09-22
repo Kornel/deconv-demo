@@ -2,8 +2,8 @@ name: deconv-demo
 account: kornel-jan
 server: shinyapps.io
 appId: 123654
-bundleId: 548226
+bundleId: 562696
 url: https://kornel-jan.shinyapps.io/deconv-demo/
-when: 1472911904.28887
+when: 1474381462.97383
 asMultiple: FALSE
 asStatic: FALSE

@@ -65,6 +65,15 @@ shinyServer(function(input, output) {
         grDevices::pdf(..., width, height)
       }
       
+      path <- file.path('resources', input$method, 'heatmap', paste0(input$tumor, '.RData'))
+      df <- local(get(load(path)))
+      
+      if (input$top != 'All') {
+        n <- as.numeric(input$top)
+        df <- df[, seq(1:n)]
+      }
+      
       ggsave(file, plot = generatePlot(), device = device)
     })
+
 })
